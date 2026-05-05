@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="images/favicon.ico">
+
+  <title>Examen | SSTBRT</title>
+      <link rel="stylesheet" href="/responsive.css">
+
+  <link rel="stylesheet" href="exam.css">
+</head>
+
+<body>
+
+  <div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+
+        <div class="brand">
+          <img src="images/favicon.ico" class="brand-logo" alt="Logo">
+          <div>
+            <h2>SSTBRT</h2>
+            <span>Academy</span>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="/dashboard.html" class="nav-item">
+            <span>Dashboard</span>
+          </a>
+          <a href="/my-courses.html" class="nav-item active">
+            <span>Mis Cursos</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="sidebar-bottom">
+        <button class="logout-btn" onclick="forceLogout()">
+          Cerrar sesión
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="dashboard-main">
+
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <p class="welcome-text">Evaluación final</p>
+          <h1 id="examTitle">Cargando examen...</h1>
+        </div>
+
+        <div class="topbar-right">
+          <div class="user-mini">
+            <div id="userAvatar" class="user-avatar">U</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXAM CONTENT -->
+      <div id="examContainer">
+
+        <!-- Aquí se renderizan las preguntas -->
+        <div id="examQuestions"></div>
+
+        <!-- Botón enviar -->
+        <button onclick="submitExam()">
+          Enviar examen
+        </button>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- RESULT MODAL -->
+  <div id="resultModal" class="modal-overlay">
+    <div class="modal-box">
+      <h2 id="resultTitle"></h2>
+      <p id="resultText"></p>
+
+      <div class="modal-actions">
+        <button class="btn-confirm" onclick="closeResultModal()">
+          Volver a cursos
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="exam.js"></script>
+
+</body>
+</html>

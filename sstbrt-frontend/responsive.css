@@ -1,0 +1,300 @@
+/* ============================================
+   RESPONSIVE GLOBAL - SSTBRT
+   Aplica a TODAS las páginas
+============================================ */
+
+/* ============================================
+   FUENTES Y RESET BÁSICO
+============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+}
+
+/* ============================================
+   LAYOUT PRINCIPAL
+============================================ */
+.dashboard-layout,
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ============================================
+   SIDEBAR
+============================================ */
+.sidebar {
+  width: 260px;
+  background: var(--white, #fff);
+  border-right: 1px solid var(--gray-200, #e2e8f0);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ============================================
+   MAIN CONTENT
+============================================ */
+.dashboard-main,
+.admin-main {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+/* ============================================
+   RESPONSIVE TABLET (hasta 1024px)
+============================================ */
+@media (max-width: 1024px) {
+
+  .dashboard-layout,
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid var(--gray-200, #e2e8f0);
+    padding: 16px;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    margin-bottom: 0;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .nav-item {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .nav-item span {
+    display: none;
+  }
+
+  .sidebar-bottom {
+    margin-top: 0;
+  }
+
+  .logout-btn {
+    padding: 10px;
+  }
+
+  .logout-btn span {
+    display: none;
+  }
+
+  .dashboard-main,
+  .admin-main {
+    padding: 20px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .main-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ============================================
+   RESPONSIVE MÓVIL (hasta 768px)
+============================================ */
+@media (max-width: 768px) {
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .topbar h1 {
+    font-size: 1.4rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  .stat-card h3 {
+    font-size: 1.2rem;
+  }
+
+  .panel {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .panel-head h2 {
+    font-size: 1rem;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    min-width: 600px;
+  }
+
+  .continue-card {
+    flex-direction: column;
+  }
+
+  .continue-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modal-box {
+    width: calc(100% - 32px);
+    margin: 0 auto;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   RESPONSIVE PEQUEÑO (hasta 480px)
+============================================ */
+@media (max-width: 480px) {
+
+  .sidebar {
+    padding: 12px;
+  }
+
+  .brand h2 {
+    font-size: 0.9rem;
+  }
+
+  .brand span {
+    font-size: 0.75rem;
+  }
+
+  .dashboard-main,
+  .admin-main {
+    padding: 14px;
+  }
+
+  .topbar h1 {
+    font-size: 1.2rem;
+  }
+
+  .welcome-text {
+    font-size: 0.85rem;
+  }
+
+  .stat-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .continue-card h3 {
+    font-size: 1rem;
+  }
+
+  .panel {
+    padding: 12px;
+  }
+
+  .modal-box {
+    padding: 20px;
+  }
+
+  .modal-box h2 {
+    font-size: 1.1rem;
+  }
+}
+
+/* ============================================
+   UTILIDADES RESPONSIVE
+============================================ */
+.hide-mobile {
+  display: block;
+}
+
+.show-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+
+  .show-mobile {
+    display: block !important;
+  }
+}
+
+/* ============================================
+   PRINT (IMPRIMIR)
+============================================ */
+@media print {
+  .sidebar,
+  .topbar,
+  .logout-btn {
+    display: none !important;
+  }
+
+  .dashboard-main,
+  .admin-main {
+    padding: 0;
+  }
+
+  .panel {
+    box-shadow: none;
+    border: none;
+  }
+}

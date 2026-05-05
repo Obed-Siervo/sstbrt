@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curso | SSTBRT Academy</title>
+  <link rel="stylesheet" href="/course.css">
+      <link rel="stylesheet" href="/responsive.css">
+
+  <link rel="icon" href="images/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="course-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <img src="images/favicon.ico" alt="SSTBRT Logo" class="brand-logo">
+        <div>
+          <h2>SSTBRT</h2>
+          <span>Academy</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/dashboard" class="nav-item">
+          <i class="fas fa-house"></i>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="/courses" class="nav-item">
+          <i class="fas fa-layer-group"></i>
+          <span>Cursos</span>
+        </a>
+
+        <a href="/my-courses" class="nav-item active">
+          <i class="fas fa-book-open"></i>
+          <span>Mis Cursos</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button class="logout-btn" onclick="handleLogout()">
+        <i class="fas fa-right-from-bracket"></i>
+        <span>Cerrar sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="course-main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <p class="welcome-text">Contenido del curso</p>
+        <h1 id="courseTitle">Cargando curso...</h1>
+      </div>
+
+      <div class="topbar-right">
+        <div class="progress-pill">
+          <i class="fas fa-chart-line"></i>
+          <span id="courseProgressText">0% completado</span>
+        </div>
+
+        <div class="user-mini">
+          <div class="user-avatar" id="userAvatar">U</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="course-hero" id="courseHero">
+      <div class="course-hero-image">
+        <img id="courseImage" src="images/default-course.jpg" alt="Curso">
+      </div>
+
+      <div class="course-hero-content">
+        <span class="course-badge">Curso activo</span>
+        <h2 id="courseHeroTitle">Cargando...</h2>
+        <p id="courseDescription">Cargando descripción...</p>
+
+        <div class="course-progress-block">
+          <div class="progress-info">
+            <span>Progreso general</span>
+            <strong id="courseProgressValue">0%</strong>
+          </div>
+
+          <div class="progress-bar">
+            <div class="progress-fill" id="courseProgressBar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <button class="continue-btn" id="continueBtn">
+          <i class="fas fa-play"></i>
+          Continuar curso
+        </button>
+      </div>
+    </section>
+
+    <!-- CONTENT -->
+    <section class="course-content">
+
+      <!-- LESSONS -->
+      <aside class="lessons-panel">
+        <div class="panel-head">
+          <h3>Contenido</h3>
+        </div>
+
+        <div id="lessonsContainer" class="lessons-container">
+          <!-- JS render -->
+        </div>
+
+        <div class="final-exam-box">
+  <button id="finalExamBtn" class="final-exam-btn" disabled>
+    Examen final bloqueado
+  </button>
+</div>
+      </aside>
+
+      <!-- PLAYER -->
+      <section class="player-panel">
+        <div class="panel-head">
+          <h3 id="lessonTitle">Selecciona una lección</h3>
+          <span id="lessonTypeBadge" class="lesson-type-badge">—</span>
+        </div>
+
+        <div class="lesson-viewer" id="lessonViewer">
+          <div class="empty-player">
+            <i class="fas fa-circle-play"></i>
+            <h3>Selecciona una lección</h3>
+            <p>El contenido del curso aparecerá aquí.</p>
+          </div>
+        </div>
+
+        <div class="lesson-actions">
+          <button class="btn-complete" id="completeLessonBtn" disabled>
+            <i class="fas fa-check"></i>
+            Marcar como completada
+          </button>
+        </div>
+      </section>
+
+    </section>
+  </main>
+</div>
+
+<!-- MODAL LOGOUT -->
+<div id="logoutModal" class="modal-overlay">
+  <div class="modal-box">
+    <h2>¿Cerrar sesión?</h2>
+    <p>¿Estás seguro que deseas salir de tu cuenta?</p>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeLogoutModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmLogout()">Cerrar sesión</button>
+    </div>
+  </div>
+</div>
+
+<div id="examModal" class="modal-overlay">
+  <div class="modal-box">
+    <h2>Examen requerido</h2>
+    <p>Debes completar el examen para continuar.</p>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeExamModal()">Cerrar</button>
+      <button class="btn-confirm" onclick="goToExamNow()">Ir al examen</button>
+    </div>
+  </div>
+</div>
+
+<script src="course.js"></script>
+</body>
+</html> 

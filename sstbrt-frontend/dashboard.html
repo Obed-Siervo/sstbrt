@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | SSTBRT Academy</title>
+  <link rel="stylesheet" href="/dashboard.css">
+  <link rel="stylesheet" href="/responsive.css">
+
+  <link rel="icon" href="images/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <img src="images/favicon.ico" alt="SSTBRT Logo" class="brand-logo">
+        <div>
+          <h2>SSTBRT</h2>
+          <span>Academy</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/dashboard" class="nav-item active">
+          <i class="fas fa-house"></i>
+          <span>Dashboard</span>
+        </a>
+
+                <a href="/courses" class="nav-item">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <span>Cursos</span>
+        </a>
+
+
+        <a href="/my-courses" class="nav-item">
+          <i class="fas fa-book-open"></i>
+          <span>Mis Cursos</span>
+        </a>
+
+        <a href="/progress" class="nav-item">
+          <i class="fas fa-chart-line"></i>
+          <span>Progreso</span>
+        </a>
+
+        <a href="/certificates" class="nav-item">
+          <i class="fas fa-award"></i>
+          <span>Certificados</span>
+        </a>
+
+        <a href="/profile" class="nav-item">
+          <i class="fas fa-user"></i>
+          <span>Perfil</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button class="logout-btn" onclick="handleLogout()">
+        <i class="fas fa-right-from-bracket"></i>
+        <span>Cerrar sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dashboard-main">
+
+    <!-- HEADER -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <p class="welcome-text">Bienvenido de vuelta,</p>
+        <h1 id="userName">Usuario</h1>
+      </div>
+
+      <div class="topbar-right">
+        <div class="progress-pill">
+          <i class="fas fa-bolt"></i>
+          <span id="generalProgress">Progreso general: 0%</span>
+        </div>
+
+        <div class="user-mini">
+          <div class="user-avatar" id="userAvatar">U</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <section class="dashboard-content">
+
+      <!-- STATS -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue">
+            <i class="fas fa-book"></i>
+          </div>
+          <div>
+            <h3 id="coursesCount">0</h3>
+            <p>Cursos inscritos</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div>
+            <h3 id="progressCount">0%</h3>
+            <p>Progreso total</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon gold">
+            <i class="fas fa-certificate"></i>
+          </div>
+          <div>
+            <h3 id="certificatesCount">0</h3>
+            <p>Certificados</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon purple">
+            <i class="fas fa-fire"></i>
+          </div>
+          <div>
+            <h3 id="streakCount">0 días</h3>
+            <p>Racha activa</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAIN GRID -->
+      <section class="main-grid">
+
+        <!-- CONTINUE LEARNING -->
+        <div class="panel panel-large">
+          <div class="panel-head">
+            <h2>Continuar aprendiendo</h2>
+            <a href="#" class="link-arrow">Ver curso <i class="fas fa-arrow-right"></i></a>
+          </div>
+
+          <div class="continue-card">
+            <div class="continue-info">
+              <span class="badge">En progreso</span>
+              <h3>Cargando curso...</h3>
+              <p>Cargando siguiente lección...</p>
+
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+
+              <small>0% completado</small>
+            </div>
+
+           
+          </div>
+        </div>
+
+        <!-- CERTIFICATES -->
+        <div class="panel certificates-panel">
+          <div class="panel-head">
+            <h2>Certificados</h2>
+            <a href="#" class="link-arrow">Ver todos <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+
+        <!-- ACTIVITY -->
+        <div class="panel activity-panel">
+          <div class="panel-head">
+            <h2>Actividad reciente</h2>
+          </div>
+        </div>
+
+      </section>
+    </section>
+  </main>
+</div>
+
+<!-- MODAL LOGOUT -->
+<div id="logoutModal" class="modal-overlay">
+  <div class="modal-box">
+    <h2>¿Cerrar sesión?</h2>
+    <p>¿Estás seguro que deseas salir de tu cuenta?</p>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeLogoutModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmLogout()">Cerrar sesión</button>
+    </div>
+  </div>
+</div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>

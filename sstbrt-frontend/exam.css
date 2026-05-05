@@ -1,0 +1,194 @@
+/* ================= ROOT ================= */
+:root {
+  --primary: #2563EB;
+  --primary-dark: #1D4ED8;
+  --primary-light: #DBEAFE;
+  --dark: #0F172A;
+  --white: #FFFFFF;
+  --gray-50: #F8FAFC;
+  --gray-100: #F1F5F9;
+  --gray-200: #E2E8F0;
+  --gray-500: #64748B;
+}
+
+/* ================= RESET ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: var(--gray-50);
+  color: var(--dark);
+}
+
+/* ================= LAYOUT ================= */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+  width: 250px;
+  background: var(--white);
+  border-right: 1px solid var(--gray-200);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.brand-logo {
+  width: 40px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nav-item {
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--gray-500);
+  font-weight: 600;
+}
+
+.nav-item.active,
+.nav-item:hover {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.logout-btn {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--gray-200);
+}
+
+/* ================= MAIN ================= */
+.dashboard-main {
+  flex: 1;
+  padding: 30px;
+}
+
+/* ================= TOPBAR ================= */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.welcome-text {
+  color: var(--gray-500);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* ================= EXAM ================= */
+#examContainer {
+  background: var(--white);
+  padding: 30px;
+  border-radius: 15px;
+  border: 1px solid var(--gray-200);
+  max-width: 800px;
+}
+
+.question-card {
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--gray-200);
+  background: var(--gray-50);
+}
+
+.question-card h3 {
+  margin-bottom: 15px;
+}
+
+.question-card label {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  border: 1px solid var(--gray-200);
+  background: var(--white);
+}
+
+.question-card label:hover {
+  background: var(--primary-light);
+}
+
+#examContainer button {
+  margin-top: 20px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#examContainer button:hover {
+  background: var(--primary-dark);
+}
+
+/* ================= MODAL ================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-box {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  width: 300px;
+  text-align: center;
+}
+
+.btn-confirm {
+  margin-top: 15px;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: white;
+  cursor: pointer;
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Cursos | SSTBRT Academy</title>
+  <link rel="stylesheet" href="my-courses.css">
+    <link rel="stylesheet" href="/responsive.css">
+
+  <link rel="icon" href="images/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <img src="images/favicon.ico" alt="SSTBRT Logo" class="brand-logo">
+        <div>
+          <h2>SSTBRT</h2>
+          <span>Academy</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/dashboard" class="nav-item">
+          <i class="fas fa-house"></i>
+          <span>Dashboard</span>
+        </a>
+
+                <a href="/courses" class="nav-item">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <span>Cursos</span>
+        </a>
+
+
+        <a href="/my-courses" class="nav-item active active">
+          <i class="fas fa-book-open"></i>
+          <span>Mis Cursos</span>
+        </a>
+
+        <a href="/progress" class="nav-item">
+          <i class="fas fa-chart-line"></i>
+          <span>Progreso</span>
+        </a>
+
+        <a href="/certificates" class="nav-item">
+          <i class="fas fa-award"></i>
+          <span>Certificados</span>
+        </a>
+
+        <a href="/profile" class="nav-item">
+          <i class="fas fa-user"></i>
+          <span>Perfil</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button class="logout-btn" onclick="handleLogout()">
+        <i class="fas fa-right-from-bracket"></i>
+        <span>Cerrar sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dashboard-main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <p class="welcome-text">Tus cursos activos</p>
+        <h1>Mis Cursos</h1>
+      </div>
+
+      <div class="topbar-right">
+        <div class="user-mini">
+          <div class="user-avatar" id="userAvatar">U</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <section class="dashboard-content">
+      <div class="courses-grid" id="coursesGrid">
+        <!-- JS renderiza aquí -->
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- MODAL LOGOUT -->
+<div id="logoutModal" class="modal-overlay">
+  <div class="modal-box">
+    <h2>¿Cerrar sesión?</h2>
+    <p>¿Estás seguro que deseas salir de tu cuenta?</p>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeLogoutModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmLogout()">Cerrar sesión</button>
+    </div>
+  </div>
+</div>
+
+<script src="my-courses.js"></script>
+</body>
+</html>
