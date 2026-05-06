@@ -17,32 +17,9 @@ const dashboardRoutes = require('./routes/dashboard');
 
 const app = express();
 
-app.use((req, res, next) => {
-  const allowedOrigins = [
-    'https://sstbrt.com',
-    'https://www.sstbrt.com',
-    'https://sstbrt-frontend.onrender.com'
-  ];
-
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-
-  res.header('Vary', 'Origin');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
-
-  next();
-});
-
-// CORS PRODUCCIÓN
+// =======================
+// CORS LIMPIO PRODUCCIÓN
+// =======================
 const allowedOrigins = [
   'https://sstbrt.com',
   'https://www.sstbrt.com',
@@ -52,27 +29,31 @@ const allowedOrigins = [
   'http://127.0.0.1:5500'
 ];
 
-const corsOptions = {
-  origin: [
-    'https://sstbrt.com',
-    'https://www.sstbrt.com',
-    'https://sstbrt-frontend.onrender.com'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-  optionsSuccessStatus: 204
-};
-
-app.use(cors(corsOptions));
-
 app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
-  next();
-});
+  const origin = req.headers.origin;
 
+  if (!origin || allowedOrigins.includes(origin)) {
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(204);
+    }
+
+    return next();
+  }
+
+  return res.status(403).json({
+    success: false,
+    message: 'Origen no permitido por CORS'
+  });
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -82,6 +63,15 @@ app.use((req, res, next) => {
   res.set('Pragma', 'no-cache');
   res.set('Expires', '0');
   next();
+});
+
+// PRUEBA CORS
+app.get('/api/test-cors', (req, res) => {
+  res.json({
+    success: true,
+    message: 'CORS funcionando correctamente',
+    origin: req.headers.origin || null
+  });
 });
 
 // ARCHIVOS ESTÁTICOS
@@ -137,7 +127,7 @@ app.get('/profile', (req, res) => {
   res.sendFile(path.join(__dirname, '../sstbrt-frontend/profile.html'));
 });
 
-// 404 PARA API
+// 404 API
 app.use('/api', (req, res) => {
   res.status(404).json({
     success: false,
@@ -150,7 +140,7 @@ app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, '../sstbrt-frontend/index.html'));
 });
 
-// MANEJO DE ERRORES
+// ERRORES
 app.use((err, req, res, next) => {
   console.error('❌ Error global:', err.message);
 
