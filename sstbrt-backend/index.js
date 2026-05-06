@@ -28,20 +28,26 @@ const allowedOrigins = [
 ];
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log('❌ CORS bloqueado para:', origin);
-      callback(new Error('No permitido por CORS'));
-    }
-  },
-  credentials: true,
+  origin: [
+    'https://sstbrt.com',
+    'https://www.sstbrt.com',
+    'https://sstbrt-frontend.onrender.com'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions));
+
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
