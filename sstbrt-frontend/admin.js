@@ -1,3 +1,4 @@
+const API_BASE = '/api';
 const API_BASE_URL = "https://sstbrt-backend.onrender.com/api";
 let editingCourseId = null;
 
