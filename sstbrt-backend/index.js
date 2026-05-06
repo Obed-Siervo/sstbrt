@@ -24,7 +24,7 @@ const app = express();
 // MIDDLEWARES GLOBALES
 // ============================================
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'],
+  origin: ['https://sstbrt-frontend.onrender.com/api'],
   credentials: true
 }));
 
