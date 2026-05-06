@@ -1,4 +1,4 @@
-const API_BASE_URL = `${window.location.origin}/api`;
+const API_BASE_URL = "https://sstbrt-backend.onrender.com/api";
 let currentCourse = null;
 let currentLesson = null;
 
