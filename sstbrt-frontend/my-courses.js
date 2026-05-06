@@ -1,7 +1,7 @@
 // ============================================
 // CONFIG
 // ============================================
-const API_BASE_URL = "https://sstbrt-backend.onrender.com/api";
+const API_BASE = '/api';
 
 // ============================================
 // INIT
@@ -29,9 +29,14 @@ function protectRoute() {
 function loadUserAvatar() {
   try {
     const user = JSON.parse(localStorage.getItem('user'));
-    document.getElementById('userAvatar').textContent = (user?.name || 'U')[0].toUpperCase();
+    const avatar = document.getElementById('userAvatar');
+
+    if (avatar) {
+      avatar.textContent = (user?.name || 'U')[0].toUpperCase();
+    }
   } catch {
-    document.getElementById('userAvatar').textContent = 'U';
+    const avatar = document.getElementById('userAvatar');
+    if (avatar) avatar.textContent = 'U';
   }
 }
 
@@ -42,13 +47,13 @@ async function loadMyCourses() {
   try {
     const token = localStorage.getItem('token');
 
-    const response = await fetch(`${API_BASE_URL}/courses/my-courses`, {
+    const response = await fetch(`${API_BASE}/courses/my-courses`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     });
 
-    if (response.status === 401) {
+    if (response.status === 401 || response.status === 403) {
       forceLogout();
       return;
     }
@@ -59,7 +64,7 @@ async function loadMyCourses() {
       throw new Error(result.message || 'Error cargando cursos');
     }
 
-    renderCourses(result.data);
+    renderCourses(result.data || []);
 
   } catch (error) {
     console.error('❌ Error loading courses:', error);
@@ -72,6 +77,7 @@ async function loadMyCourses() {
 // ============================================
 function renderCourses(courses) {
   const grid = document.getElementById('coursesGrid');
+  if (!grid) return;
 
   if (!courses || courses.length === 0) {
     renderEmptyState(
@@ -120,6 +126,7 @@ function renderCourses(courses) {
 // ============================================
 function renderEmptyState(title, text) {
   const grid = document.getElementById('coursesGrid');
+  if (!grid) return;
 
   grid.innerHTML = `
     <div class="empty-state">
@@ -149,11 +156,13 @@ function handleLogout() {
 }
 
 function openLogoutModal() {
-  document.getElementById('logoutModal').classList.add('active');
+  const modal = document.getElementById('logoutModal');
+  if (modal) modal.classList.add('active');
 }
 
 function closeLogoutModal() {
-  document.getElementById('logoutModal').classList.remove('active');
+  const modal = document.getElementById('logoutModal');
+  if (modal) modal.classList.remove('active');
 }
 
 function confirmLogout() {
