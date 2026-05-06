@@ -26,8 +26,7 @@ const app = express();
 app.use(cors({
   origin: [
     'https://sstbrt.com',
-    'https://www.sstbrt.com',
-    'https://sstbrt-frontend.onrender.com'
+    'https://www.sstbrt.com'
   ],
   credentials: true
 }));
