@@ -23,16 +23,7 @@ const app = express();
 // ============================================
 // MIDDLEWARES GLOBALES
 // ============================================
-app.use(cors({
-  origin: [
-    'https://sstbrt.com',
-    'https://www.sstbrt.com',
-    'https://sstbrt-frontend.onrender.com'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
