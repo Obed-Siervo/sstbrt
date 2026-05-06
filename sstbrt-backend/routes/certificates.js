@@ -9,7 +9,10 @@ const router = express.Router();
 
 const CERT_DIR = path.join(__dirname, '..', 'certificates');
 
-// Asegurar que exista la carpeta certificates
+// URL pública real
+const BASE_URL = process.env.PUBLIC_URL || 'https://sstbrt.com';
+
+// Crear carpeta si no existe
 if (!fs.existsSync(CERT_DIR)) {
   fs.mkdirSync(CERT_DIR, { recursive: true });
 }
@@ -39,8 +42,7 @@ function formatDate(dateValue) {
 }
 
 // ============================================
-// PÁGINA DE VALIDACIÓN DEL CERTIFICADO
-// El QR apuntará aquí
+// VERIFY CERTIFICATE PAGE
 // ============================================
 router.get('/verify/:code', async (req, res) => {
   try {
@@ -63,198 +65,152 @@ router.get('/verify/:code', async (req, res) => {
 
     if (!rows.length) {
       return res.status(404).send(`
-        <!doctype html>
-        <html lang="es">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Certificado no válido</title>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              background: #F8FAFC;
-              color: #0F172A;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              min-height: 100vh;
-              margin: 0;
-            }
-            .card {
-              background: #fff;
-              padding: 32px;
-              border-radius: 18px;
-              box-shadow: 0 10px 30px rgba(0,0,0,.08);
-              border: 1px solid #E2E8F0;
-              max-width: 520px;
-              width: calc(100% - 32px);
-              text-align: center;
-            }
-            h1 { margin: 0 0 12px; color: #DC2626; }
-            p { color: #64748B; }
-          </style>
-        </head>
-        <body>
-          <div class="card">
-            <h1>Certificado no válido</h1>
-            <p>El código no existe o no fue encontrado en el sistema.</p>
-          </div>
-        </body>
+        <html>
+          <body style="font-family:Arial;padding:40px;text-align:center;">
+            <h1>❌ Certificado no válido</h1>
+            <p>El certificado no fue encontrado.</p>
+          </body>
         </html>
       `);
     }
 
     const cert = rows[0];
-    const downloadUrl = `/api/certificates/${encodeURIComponent(cert.certificate_code)}`;
 
     return res.send(`
-      <!doctype html>
+      <!DOCTYPE html>
       <html lang="es">
       <head>
         <meta charset="UTF-8">
+        <title>Certificado válido</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Validación de certificado</title>
+
         <style>
-          :root {
-            --primary: #2563EB;
-            --primary-dark: #1D4ED8;
-            --success: #10B981;
-            --dark: #0F172A;
-            --gray-500: #64748B;
-            --gray-200: #E2E8F0;
-            --gray-50: #F8FAFC;
-            --white: #FFFFFF;
+          body{
+            margin:0;
+            background:#F8FAFC;
+            font-family:Arial,sans-serif;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            min-height:100vh;
+            padding:20px;
           }
-          * { box-sizing: border-box; }
-          body {
-            margin: 0;
-            font-family: Inter, Arial, sans-serif;
-            background: linear-gradient(180deg, #F8FAFC 0%, #E2E8F0 100%);
-            color: var(--dark);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+
+          .card{
+            background:white;
+            max-width:650px;
+            width:100%;
+            border-radius:20px;
+            padding:35px;
+            box-shadow:0 10px 35px rgba(0,0,0,.08);
+            text-align:center;
           }
-          .card {
-            width: 100%;
-            max-width: 620px;
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: 22px;
-            box-shadow: 0 20px 50px rgba(15, 23, 42, .10);
-            padding: 30px;
-            text-align: center;
+
+          .badge{
+            background:#DCFCE7;
+            color:#15803D;
+            padding:8px 15px;
+            border-radius:999px;
+            display:inline-block;
+            font-weight:bold;
+            margin-bottom:20px;
           }
-          .badge {
-            display: inline-block;
-            padding: 8px 14px;
-            border-radius: 999px;
-            background: #DCFCE7;
-            color: #15803D;
-            font-weight: 700;
-            font-size: 0.85rem;
-            margin-bottom: 14px;
+
+          h1{
+            margin:0;
+            color:#0F172A;
           }
-          h1 {
-            margin: 0 0 10px;
-            font-size: 2rem;
+
+          .muted{
+            color:#64748B;
+            margin-top:10px;
+            margin-bottom:25px;
           }
-          .muted {
-            color: var(--gray-500);
-            margin: 0 0 24px;
+
+          .info{
+            text-align:left;
+            background:#F8FAFC;
+            border:1px solid #E2E8F0;
+            border-radius:14px;
+            padding:20px;
           }
-          .info {
-            background: var(--gray-50);
-            border: 1px solid var(--gray-200);
-            border-radius: 16px;
-            padding: 18px;
-            text-align: left;
-            margin-bottom: 22px;
+
+          .row{
+            display:flex;
+            justify-content:space-between;
+            margin-bottom:12px;
+            gap:20px;
           }
-          .row {
-            display: flex;
-            justify-content: space-between;
-            gap: 16px;
-            padding: 10px 0;
-            border-bottom: 1px solid #EEF2F7;
+
+          .label{
+            color:#64748B;
+            font-weight:bold;
           }
-          .row:last-child { border-bottom: none; }
-          .label {
-            color: var(--gray-500);
-            font-weight: 600;
+
+          .value{
+            color:#0F172A;
+            font-weight:bold;
+            text-align:right;
           }
-          .value {
-            color: var(--dark);
-            font-weight: 700;
-            text-align: right;
+
+          .btn{
+            display:inline-block;
+            margin-top:25px;
+            background:#2563EB;
+            color:white;
+            text-decoration:none;
+            padding:14px 20px;
+            border-radius:12px;
+            font-weight:bold;
           }
-          .actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-          }
-          .btn {
-            display: inline-block;
-            padding: 12px 18px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 700;
-            transition: .25s ease;
-          }
-          .btn-primary {
-            background: var(--primary);
-            color: #fff;
-          }
-          .btn-primary:hover { background: var(--primary-dark); }
-          .btn-secondary {
-            background: #E2E8F0;
-            color: #0F172A;
-          }
-          .btn-secondary:hover { background: #CBD5E1; }
-          .small {
-            margin-top: 16px;
-            font-size: .85rem;
-            color: var(--gray-500);
+
+          .btn:hover{
+            background:#1D4ED8;
           }
         </style>
       </head>
+
       <body>
+
         <div class="card">
-          <div class="badge">Certificado válido</div>
+
+          <div class="badge">✅ Certificado válido</div>
+
           <h1>${escapeHtml(cert.name)}</h1>
-          <p class="muted">Este certificado ha sido registrado correctamente en SSTBRT Academy.</p>
+
+          <p class="muted">
+            Este certificado ha sido emitido por SSTBRT Academy.
+          </p>
 
           <div class="info">
+
             <div class="row">
               <div class="label">Curso</div>
               <div class="value">${escapeHtml(cert.course)}</div>
             </div>
+
             <div class="row">
-              <div class="label">Fecha de emisión</div>
+              <div class="label">Fecha</div>
               <div class="value">${formatDate(cert.created_at)}</div>
             </div>
+
             <div class="row">
-              <div class="label">Código de verificación</div>
+              <div class="label">Código</div>
               <div class="value">${escapeHtml(cert.certificate_code)}</div>
             </div>
+
           </div>
 
-          <div class="actions">
-            <a class="btn btn-primary" href="${downloadUrl}" target="_blank" rel="noopener noreferrer">
-              Descargar certificado PDF
-            </a>
-            <a class="btn btn-secondary" href="/">
-              Ir al inicio
-            </a>
-          </div>
+          <a 
+            class="btn"
+            href="${BASE_URL}/api/certificates/${encodeURIComponent(cert.certificate_code)}"
+            target="_blank"
+          >
+            📜 Descargar certificado PDF
+          </a>
 
-          <div class="small">
-            Si este certificado fue compartido por QR, puedes verificarlo aquí.
-          </div>
         </div>
+
       </body>
       </html>
     `);
@@ -266,7 +222,7 @@ router.get('/verify/:code', async (req, res) => {
 });
 
 // ============================================
-// GENERAR / SERVIR PDF DEL CERTIFICADO
+// GENERAR PDF CERTIFICADO
 // ============================================
 router.get('/:code', async (req, res) => {
   try {
@@ -295,29 +251,26 @@ router.get('/:code', async (req, res) => {
     }
 
     const data = rows[0];
+
     const fileName = `${data.certificate_code}.pdf`;
     const filePath = path.join(CERT_DIR, fileName);
-    const publicUrl = `/api/certificates/${fileName}`;
 
-    // Si ya existe el PDF, lo servimos
+    // Si ya existe el PDF
     if (fs.existsSync(filePath)) {
-      await db.promise().query(
-        `UPDATE certificates SET pdf_url = ? WHERE certificate_code = ?`,
-        [publicUrl, code]
-      ).catch(() => {});
-
       return res.sendFile(filePath);
     }
 
-    // QR que apunta a la página de validación
-      const verificationUrl = `${req.protocol}://${req.get('host')}/api/certificates/${data.certificate_code}`;
-      const qrImage = await QRCode.toDataURL(verificationUrl, {
+    // URL del QR
+    const verificationUrl = `${BASE_URL}/api/certificates/verify/${encodeURIComponent(data.certificate_code)}`;
+
+    // Generar QR
+    const qrImage = await QRCode.toDataURL(verificationUrl, {
       errorCorrectionLevel: 'H',
       margin: 1,
       width: 220
     });
 
-    // Crear PDF
+    // PDF
     const doc = new PDFDocument({
       size: 'A4',
       layout: 'landscape',
@@ -325,175 +278,130 @@ router.get('/:code', async (req, res) => {
     });
 
     const stream = fs.createWriteStream(filePath);
+
     doc.pipe(stream);
 
     const pageW = doc.page.width;
     const pageH = doc.page.height;
-    const outerMargin = 22;
 
     // Fondo
     doc.rect(0, 0, pageW, pageH).fill('#F8FAFC');
 
-    // Marco principal
+    // Marco
     doc
       .lineWidth(3)
       .strokeColor('#2563EB')
-      .roundedRect(
-        outerMargin,
-        outerMargin,
-        pageW - outerMargin * 2,
-        pageH - outerMargin * 2,
-        18
-      )
+      .roundedRect(25, 25, pageW - 50, pageH - 50, 18)
       .stroke();
 
-    // Marco interior
-    doc
-      .lineWidth(1)
-      .strokeColor('#BFDBFE')
-      .roundedRect(
-        outerMargin + 8,
-        outerMargin + 8,
-        pageW - (outerMargin + 8) * 2,
-        pageH - (outerMargin + 8) * 2,
-        14
-      )
-      .stroke();
-
-    // Encabezado
-    doc
-      .font('Helvetica')
-      .fontSize(16)
-      .fillColor('#64748B')
-      .text('SSTBRT Academy', 0, 46, { align: 'center' });
-
+    // Título
     doc
       .font('Helvetica-Bold')
-      .fontSize(40)
+      .fontSize(38)
       .fillColor('#0F172A')
-      .text('CERTIFICADO', 0, 78, { align: 'center' });
+      .text('CERTIFICADO', 0, 70, {
+        align: 'center'
+      });
 
-    // Línea decorativa
-    doc
-      .moveTo(pageW / 2 - 82, 128)
-      .lineTo(pageW / 2 + 82, 128)
-      .lineWidth(2)
-      .strokeColor('#2563EB')
-      .stroke();
-
-    // Texto principal
+    // Texto
     doc
       .font('Helvetica')
-      .fontSize(14)
+      .fontSize(15)
       .fillColor('#334155')
-      .text('Se otorga a:', 0, 152, { align: 'center' });
+      .text('Se otorga a:', 0, 150, {
+        align: 'center'
+      });
 
+    // Nombre
     doc
       .font('Helvetica-Bold')
       .fontSize(30)
       .fillColor('#2563EB')
-      .text(data.name, 0, 184, { align: 'center' });
+      .text(data.name, 0, 185, {
+        align: 'center'
+      });
 
+    // Curso
     doc
       .font('Helvetica')
-      .fontSize(13)
+      .fontSize(15)
       .fillColor('#334155')
-      .text('Por haber completado exitosamente el curso:', 0, 240, { align: 'center' });
+      .text('Por haber completado exitosamente el curso:', 0, 245, {
+        align: 'center'
+      });
 
     doc
       .font('Helvetica-Bold')
       .fontSize(22)
       .fillColor('#0F172A')
-      .text(data.course, 0, 268, { align: 'center' });
+      .text(data.course, 0, 278, {
+        align: 'center'
+      });
 
-    // Fecha y código
-    const formattedDate = formatDate(data.created_at);
-
+    // Fecha
     doc
       .font('Helvetica')
       .fontSize(12)
       .fillColor('#0F172A')
-      .text(`Fecha: ${formattedDate}`, 0, 342, { align: 'center' });
+      .text(`Fecha: ${formatDate(data.created_at)}`, 0, 345, {
+        align: 'center'
+      });
 
+    // Código
     doc
       .font('Helvetica')
       .fontSize(10)
       .fillColor('#64748B')
-      .text(`Código de verificación: ${data.certificate_code}`, 0, 363, {
+      .text(`Código: ${data.certificate_code}`, 0, 365, {
         align: 'center'
       });
 
     // Firma
     doc
-      .moveTo(pageW / 2 - 90, 406)
-      .lineTo(pageW / 2 + 90, 406)
-      .lineWidth(1)
-      .strokeColor('#111827')
+      .moveTo(pageW / 2 - 90, 415)
+      .lineTo(pageW / 2 + 90, 415)
       .stroke();
 
     doc
       .font('Helvetica')
       .fontSize(11)
       .fillColor('#111827')
-      .text('Director Académico', 0, 414, { align: 'center' });
-
-    // QR dentro del marco
-    const qrBoxW = 132;
-    const qrBoxH = 132;
-    const qrBoxX = pageW - outerMargin - qrBoxW;
-    const qrBoxY = pageH - outerMargin - qrBoxH;
-
-    doc
-      .roundedRect(qrBoxX, qrBoxY, qrBoxW, qrBoxH, 12)
-      .fillAndStroke('#FFFFFF', '#E2E8F0');
-
-    doc
-      .font('Helvetica-Bold')
-      .fontSize(8)
-      .fillColor('#334155')
-      .text('VERIFICACIÓN QR', qrBoxX, qrBoxY + 10, {
-        width: qrBoxW,
+      .text('Director Académico', 0, 423, {
         align: 'center'
       });
 
-    doc.image(qrImage, qrBoxX + 24, qrBoxY + 24, {
-      width: 84
+    // QR
+    doc.image(qrImage, pageW - 150, pageH - 150, {
+      width: 95
     });
 
     doc
       .font('Helvetica')
-      .fontSize(7)
+      .fontSize(8)
       .fillColor('#64748B')
-      .text('Escanea para validar', qrBoxX, qrBoxY + 110, {
-        width: qrBoxW,
+      .text('Escanea para verificar', pageW - 170, pageH - 45, {
+        width: 130,
         align: 'center'
       });
 
     doc.end();
 
-    stream.on('finish', async () => {
-      try {
-        await db.promise().query(
-          `UPDATE certificates SET pdf_url = ? WHERE certificate_code = ?`,
-          [publicUrl, code]
-        );
-      } catch (e) {
-        console.error('Error actualizando pdf_url:', e.message);
-      }
-
+    stream.on('finish', () => {
       return res.sendFile(filePath);
     });
 
-    stream.on('error', (err) => {
-      console.error('Error escribiendo PDF:', err);
+    stream.on('error', err => {
+      console.error(err);
+
       return res.status(500).json({
         success: false,
-        message: 'Error generando el PDF'
+        message: 'Error generando PDF'
       });
     });
 
   } catch (err) {
     console.error(err);
+
     return res.status(500).json({
       success: false,
       message: 'Error generando certificado'
