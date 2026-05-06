@@ -2,13 +2,13 @@
 // CONFIGURACIÓN
 // ============================================
 const API_BASE = '/api';
-const API_BASE_URL = "https://sstbrt-backend.onrender.com/api";
-
 
 const user = JSON.parse(localStorage.getItem('user'));
+
 if (user?.role === 'admin') {
   window.location.href = '/admin';
 }
+
 // ============================================
 // INICIALIZACIÓN
 // ============================================
@@ -39,12 +39,8 @@ function protectRoute() {
   }
 }
 
-// ============================================
-// VALIDAR TOKEN
-// ============================================
 function isValidToken(token) {
-  if (!token || typeof token !== 'string') return false;
-  return token.split('.').length === 3;
+  return token && typeof token === 'string' && token.split('.').length === 3;
 }
 
 // ============================================
@@ -80,21 +76,14 @@ function initNavigation() {
 
       if (!page) return;
 
-      if (page === 'dashboard') window.location.href = '/dashboard.html';
-      if (page === 'courses') window.location.href = '/my-courses.html';
-      if (page === 'progress') window.location.href = '/progress.html';
-      if (page === 'certificates') window.location.href = '/certificates.html';
-      if (page === 'profile') window.location.href = '/profile.html';
+      if (page === 'dashboard') window.location.href = '/dashboard';
+      if (page === 'courses') window.location.href = '/my-courses';
+      if (page === 'progress') window.location.href = '/progress';
+      if (page === 'certificates') window.location.href = '/certificates';
+      if (page === 'profile') window.location.href = '/profile';
     });
   });
 }
-
-
-
-// ============================================
-// MIS CURSOS
-// ============================================
-
 
 // ============================================
 // DASHBOARD DATA
@@ -103,8 +92,10 @@ async function loadDashboardData() {
   try {
     const token = getToken();
 
-    const response = await fetch(`${API_BASE_URL}/dashboard`, {
+    const response = await fetch(`${API_BASE}/dashboard`, {
+      method: 'GET',
       headers: {
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
       }
     });
@@ -118,20 +109,23 @@ async function loadDashboardData() {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.message);
+      throw new Error(result.message || 'Error cargando dashboard');
     }
 
-    const { stats, user, continueLearning, certificates, activity } = result.data;
+    const { stats, user, continueLearning, certificates, activity } = result.data || {};
 
     if (user?.name) {
-      document.getElementById('userName').textContent = user.name;
-      document.getElementById('userAvatar').textContent = user.name[0].toUpperCase();
+      const userName = document.getElementById('userName');
+      const userAvatar = document.getElementById('userAvatar');
+
+      if (userName) userName.textContent = user.name;
+      if (userAvatar) userAvatar.textContent = user.name[0].toUpperCase();
     }
 
-    updateDashboardStats(stats);
+    updateDashboardStats(stats || {});
     renderContinueLearning(continueLearning);
-    renderCertificates(certificates);
-    renderActivity(activity);
+    renderCertificates(certificates || []);
+    renderActivity(activity || []);
 
     console.log('✅ Dashboard cargado');
 
@@ -144,11 +138,17 @@ async function loadDashboardData() {
 // STATS
 // ============================================
 function updateDashboardStats(stats) {
-  document.getElementById('coursesCount').textContent = stats.courses;
-  document.getElementById('progressCount').textContent = `${stats.progress}%`;
-  document.getElementById('certificatesCount').textContent = stats.certificates;
-  document.getElementById('streakCount').textContent = `${stats.streak} días`;
-  document.getElementById('generalProgress').textContent = `Progreso general: ${stats.progress}%`;
+  const coursesCount = document.getElementById('coursesCount');
+  const progressCount = document.getElementById('progressCount');
+  const certificatesCount = document.getElementById('certificatesCount');
+  const streakCount = document.getElementById('streakCount');
+  const generalProgress = document.getElementById('generalProgress');
+
+  if (coursesCount) coursesCount.textContent = stats.courses || 0;
+  if (progressCount) progressCount.textContent = `${stats.progress || 0}%`;
+  if (certificatesCount) certificatesCount.textContent = stats.certificates || 0;
+  if (streakCount) streakCount.textContent = `${stats.streak || 0} días`;
+  if (generalProgress) generalProgress.textContent = `Progreso general: ${stats.progress || 0}%`;
 }
 
 // ============================================
@@ -172,18 +172,20 @@ function renderContinueLearning(data) {
     return;
   }
 
-  if (title) title.textContent = data.courseTitle;
-  if (desc) desc.textContent = `Siguiente lección: ${data.lessonTitle}`;
+  if (title) title.textContent = data.courseTitle || 'Curso';
+  if (desc) desc.textContent = `Siguiente lección: ${data.lessonTitle || 'Lección pendiente'}`;
   if (progressFill) progressFill.style.width = `${data.progress || 0}%`;
   if (progressText) progressText.textContent = `${data.progress || 0}% completado`;
 
   if (continueBtn) {
+    continueBtn.style.display = 'inline-flex';
     continueBtn.onclick = () => {
       window.location.href = `/lesson.html?id=${data.lessonId}`;
     };
   }
 
   if (continueLink) {
+    continueLink.style.display = 'inline-flex';
     continueLink.onclick = (e) => {
       e.preventDefault();
       window.location.href = `/course.html?id=${data.courseId}`;
@@ -214,12 +216,14 @@ function renderCertificates(certificates) {
   }
 
   certificates.forEach(cert => {
-    const date = new Date(cert.created_at).toLocaleDateString('es-ES');
+    const date = cert.created_at
+      ? new Date(cert.created_at).toLocaleDateString('es-ES')
+      : 'Fecha no disponible';
 
     panel.insertAdjacentHTML('beforeend', `
       <div class="certificate-item">
         <div>
-          <h4>${cert.title}</h4>
+          <h4>${cert.title || 'Certificado'}</h4>
           <p>Emitido el ${date}</p>
         </div>
         <button class="icon-btn" onclick="downloadCertificate('${cert.pdf_url || ''}')">
@@ -269,7 +273,7 @@ function renderActivity(activity) {
     panel.insertAdjacentHTML('beforeend', `
       <div class="activity-item">
         <i class="fas ${icon}"></i>
-        <span>${item.message}</span>
+        <span>${item.message || 'Actividad registrada'}</span>
       </div>
     `);
   });
@@ -283,11 +287,13 @@ function handleLogout() {
 }
 
 function openLogoutModal() {
-  document.getElementById('logoutModal').classList.add('active');
+  const modal = document.getElementById('logoutModal');
+  if (modal) modal.classList.add('active');
 }
 
 function closeLogoutModal() {
-  document.getElementById('logoutModal').classList.remove('active');
+  const modal = document.getElementById('logoutModal');
+  if (modal) modal.classList.remove('active');
 }
 
 function confirmLogout() {
