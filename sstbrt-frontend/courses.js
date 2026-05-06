@@ -1,7 +1,7 @@
 // ============================================
 // CONFIG
 // ============================================
-const API_BASE_URL = "https://sstbrt-backend.onrender.com/api";
+const API_BASE = '/api';
 
 // ============================================
 // INIT
@@ -29,22 +29,24 @@ function protectRoute() {
 function loadUserAvatar() {
   try {
     const user = JSON.parse(localStorage.getItem('user'));
-    document.getElementById('userAvatar').textContent = (user?.name || 'U')[0].toUpperCase();
+    const avatar = document.getElementById('userAvatar');
+    if (avatar) avatar.textContent = (user?.name || 'U')[0].toUpperCase();
   } catch {
-    document.getElementById('userAvatar').textContent = 'U';
+    const avatar = document.getElementById('userAvatar');
+    if (avatar) avatar.textContent = 'U';
   }
 }
 
 // ============================================
-// LOAD COURSES (CATÁLOGO)
+// LOAD COURSES
 // ============================================
 async function loadCourses() {
   try {
     const token = localStorage.getItem('token');
 
-    const response = await fetch(`${API_BASE_URL}/courses`, {
+    const response = await fetch(`${API_BASE}/courses`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     });
 
@@ -59,7 +61,7 @@ async function loadCourses() {
       throw new Error(result.message || 'Error cargando catálogo');
     }
 
-    renderCourses(result.data);
+    renderCourses(result.data || []);
 
   } catch (error) {
     console.error('❌ Error loading courses catalog:', error);
@@ -94,6 +96,7 @@ function getCourseImage(title) {
 // ============================================
 function renderCourses(courses) {
   const grid = document.getElementById('coursesGrid');
+  if (!grid) return;
 
   if (!courses || courses.length === 0) {
     renderEmptyState(
@@ -105,7 +108,6 @@ function renderCourses(courses) {
 
   grid.innerHTML = courses.map(course => `
     <div class="course-card">
-
       <div class="course-image">
         <img src="${getCourseImage(course.title)}" alt="${course.title}">
       </div>
@@ -150,6 +152,7 @@ function renderCourses(courses) {
 // ============================================
 function renderEmptyState(title, text) {
   const grid = document.getElementById('coursesGrid');
+  if (!grid) return;
 
   grid.innerHTML = `
     <div class="empty-state">
@@ -167,12 +170,17 @@ async function enrollCourse(courseId) {
   try {
     const token = localStorage.getItem('token');
 
-    const response = await fetch(`${API_BASE_URL}/courses/${courseId}/enroll`, {
+    const response = await fetch(`${API_BASE}/courses/${courseId}/enroll`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     });
+
+    if (response.status === 401 || response.status === 403) {
+      forceLogout();
+      return;
+    }
 
     const result = await response.json();
 
@@ -203,11 +211,13 @@ function handleLogout() {
 }
 
 function openLogoutModal() {
-  document.getElementById('logoutModal').classList.add('active');
+  const modal = document.getElementById('logoutModal');
+  if (modal) modal.classList.add('active');
 }
 
 function closeLogoutModal() {
-  document.getElementById('logoutModal').classList.remove('active');
+  const modal = document.getElementById('logoutModal');
+  if (modal) modal.classList.remove('active');
 }
 
 function confirmLogout() {
