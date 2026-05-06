@@ -1,4 +1,7 @@
-const API_BASE_URL = "https://sstbrt-backend.onrender.com/api";
+// ============================================
+// CONFIG
+// ============================================
+const API_BASE = '/api';
 
 // ============================================
 // INIT
@@ -14,8 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================
 function protectRoute() {
   const token = localStorage.getItem('token');
-  if (!token) {
-    window.location.href = '/';
+
+  if (!token || token.split('.').length !== 3) {
+    forceLogout();
   }
 }
 
@@ -25,10 +29,14 @@ function protectRoute() {
 function loadUserAvatar() {
   try {
     const user = JSON.parse(localStorage.getItem('user'));
-    document.getElementById('userAvatar').textContent =
-      (user?.name || 'U')[0].toUpperCase();
+    const avatar = document.getElementById('userAvatar');
+
+    if (avatar) {
+      avatar.textContent = (user?.name || 'U')[0].toUpperCase();
+    }
   } catch {
-    document.getElementById('userAvatar').textContent = 'U';
+    const avatar = document.getElementById('userAvatar');
+    if (avatar) avatar.textContent = 'U';
   }
 }
 
@@ -40,8 +48,15 @@ async function loadProfile() {
     const token = localStorage.getItem('token');
 
     const res = await fetch(`${API_BASE}/dashboard`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
+
+    if (res.status === 401 || res.status === 403) {
+      forceLogout();
+      return;
+    }
 
     const data = await res.json();
 
@@ -50,12 +65,16 @@ async function loadProfile() {
       return;
     }
 
-    document.getElementById('profileName').value = data.data.user.name;
-    document.getElementById('profileEmail').value = data.data.user.email;
+    const nameInput = document.getElementById('profileName');
+    const emailInput = document.getElementById('profileEmail');
+    const profileAvatar = document.getElementById('profileAvatar');
 
-    // Actualizar avatar con inicial del nombre
-    document.getElementById('profileAvatar').textContent =
-      data.data.user.name.charAt(0).toUpperCase();
+    if (nameInput) nameInput.value = data.data.user.name || '';
+    if (emailInput) emailInput.value = data.data.user.email || '';
+
+    if (profileAvatar) {
+      profileAvatar.textContent = (data.data.user.name || 'U').charAt(0).toUpperCase();
+    }
 
   } catch (err) {
     console.log('Profile load error:', err);
@@ -68,8 +87,8 @@ async function loadProfile() {
 async function updateProfile() {
   try {
     const token = localStorage.getItem('token');
-    const name = document.getElementById('profileName').value;
-    const password = document.getElementById('profilePassword').value;
+    const name = document.getElementById('profileName')?.value.trim();
+    const password = document.getElementById('profilePassword')?.value;
 
     if (!name) {
       alert('El nombre es obligatorio');
@@ -77,6 +96,7 @@ async function updateProfile() {
     }
 
     const body = { name };
+
     if (password) {
       body.password = password;
     }
@@ -90,6 +110,11 @@ async function updateProfile() {
       body: JSON.stringify(body)
     });
 
+    if (res.status === 401 || res.status === 403) {
+      forceLogout();
+      return;
+    }
+
     const data = await res.json();
 
     if (!data.success) {
@@ -99,20 +124,34 @@ async function updateProfile() {
 
     alert('✅ Perfil actualizado correctamente');
 
-    // Actualizar localStorage
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('user')) || {};
     user.name = name;
     localStorage.setItem('user', JSON.stringify(user));
 
-    // Limpiar campo de contraseña
-    document.getElementById('profilePassword').value = '';
+    const passwordInput = document.getElementById('profilePassword');
+    const userAvatar = document.getElementById('userAvatar');
+    const profileAvatar = document.getElementById('profileAvatar');
 
-    // Recargar avatar
-    document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
-    document.getElementById('profileAvatar').textContent = name.charAt(0).toUpperCase();
+    if (passwordInput) passwordInput.value = '';
+    if (userAvatar) userAvatar.textContent = name.charAt(0).toUpperCase();
+    if (profileAvatar) profileAvatar.textContent = name.charAt(0).toUpperCase();
 
   } catch (err) {
     console.log('Update profile error:', err);
     alert('Error conectando con el servidor');
   }
+}
+
+// ============================================
+// SESSION
+// ============================================
+function clearSession() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  sessionStorage.clear();
+}
+
+function forceLogout() {
+  clearSession();
+  window.location.replace('/');
 }
