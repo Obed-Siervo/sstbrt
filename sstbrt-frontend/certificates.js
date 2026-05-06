@@ -1,4 +1,7 @@
-const API_BASE_URL = "https://sstbrt-backend.onrender.com/api";
+// ============================================
+// CONFIG
+// ============================================
+const API_BASE = '/api';
 
 // ============================================
 // INIT
@@ -14,8 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================
 function protectRoute() {
   const token = localStorage.getItem('token');
-  if (!token) {
-    window.location.href = '/';
+
+  if (!token || token.split('.').length !== 3) {
+    forceLogout();
   }
 }
 
@@ -25,10 +29,14 @@ function protectRoute() {
 function loadUserAvatar() {
   try {
     const user = JSON.parse(localStorage.getItem('user'));
-    document.getElementById('userAvatar').textContent =
-      (user?.name || 'U')[0].toUpperCase();
+    const avatar = document.getElementById('userAvatar');
+
+    if (avatar) {
+      avatar.textContent = (user?.name || 'U')[0].toUpperCase();
+    }
   } catch {
-    document.getElementById('userAvatar').textContent = 'U';
+    const avatar = document.getElementById('userAvatar');
+    if (avatar) avatar.textContent = 'U';
   }
 }
 
@@ -40,13 +48,22 @@ async function loadCertificates() {
     const token = localStorage.getItem('token');
 
     const res = await fetch(`${API_BASE}/dashboard`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
+
+    if (res.status === 401 || res.status === 403) {
+      forceLogout();
+      return;
+    }
 
     const data = await res.json();
     const container = document.getElementById('certificatesContainer');
 
-    if (!data.success || !data.data.certificates || !data.data.certificates.length) {
+    if (!container) return;
+
+    if (!data.success || !data.data?.certificates || !data.data.certificates.length) {
       container.innerHTML = `
         <div class="empty-state">
           <p style="font-size: 3rem;">🎓</p>
@@ -71,7 +88,7 @@ async function loadCertificates() {
               Código: ${cert.certificate_code}
             </p>
           </div>
-          <a href="/api/certificates/${cert.certificate_code}" 
+          <a href="${API_BASE}/certificates/${cert.certificate_code}" 
              target="_blank"
              class="continue-btn"
              style="text-decoration: none; white-space: nowrap;">
@@ -84,4 +101,18 @@ async function loadCertificates() {
   } catch (err) {
     console.log('Certificates load error:', err);
   }
+}
+
+// ============================================
+// SESSION
+// ============================================
+function clearSession() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  sessionStorage.clear();
+}
+
+function forceLogout() {
+  clearSession();
+  window.location.replace('/');
 }
