@@ -1,5 +1,4 @@
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const db = require('./db');
@@ -17,42 +16,42 @@ const dashboardRoutes = require('./routes/dashboard');
 
 const app = express();
 
-// =======================
-// CORS LIMPIO PRODUCCIÓN
-// =======================
-const allowedOrigins = [
-  'https://sstbrt.com',
-  'https://www.sstbrt.com',
-  'https://sstbrt-frontend.onrender.com',
-  'http://localhost:3000',
-  'http://localhost:5500',
-  'http://127.0.0.1:5500'
-];
+console.log('🔥 INDEX.JS ACTUALIZADO - CORS FIX V3');
 
+// =======================
+// CORS MANUAL PRODUCCIÓN
+// =======================
 app.use((req, res, next) => {
   const origin = req.headers.origin;
 
-  if (!origin || allowedOrigins.includes(origin)) {
-    if (origin) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-    }
+  console.log('🌍 ORIGIN:', origin);
+  console.log('📌 METHOD:', req.method);
+  console.log('📌 URL:', req.originalUrl);
 
-    res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  const allowedOrigins = [
+    'https://sstbrt.com',
+    'https://www.sstbrt.com',
+    'https://sstbrt-frontend.onrender.com',
+    'http://localhost:3000',
+    'http://localhost:5500',
+    'http://127.0.0.1:5500'
+  ];
 
-    if (req.method === 'OPTIONS') {
-      return res.sendStatus(204);
-    }
-
-    return next();
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
   }
 
-  return res.status(403).json({
-    success: false,
-    message: 'Origen no permitido por CORS'
-  });
+  res.setHeader('Vary', 'Origin');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    console.log('✅ PREFLIGHT OPTIONS RESPONDIDO');
+    return res.status(204).end();
+  }
+
+  next();
 });
 
 app.use(express.json());
@@ -179,7 +178,7 @@ const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en puerto ${PORT}`);
-  console.log(`🔒 CORS habilitado correctamente`);
+  console.log(`🔒 CORS manual habilitado correctamente`);
 });
 
 module.exports = app;
