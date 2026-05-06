@@ -1,7 +1,7 @@
 // ============================================
 // CONFIGURACIÓN
 // ============================================
-const API_BASE_URL = `${window.location.origin}/api/auth`;
+const API_BASE_URL = "https://sstbrt-backend.onrender.com/api";
 let isSubmitting = false;
 
 // ============================================
