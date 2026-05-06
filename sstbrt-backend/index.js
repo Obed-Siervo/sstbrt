@@ -159,12 +159,11 @@ async function createDefaultAdmin() {
 // ============================================
 const PORT = process.env.PORT || 3000;
 
-createDefaultAdmin().then(() => {
+//createDefaultAdmin().then(() => {
   app.listen(PORT, () => {
     console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
     console.log(`📂 Frontend: ${path.join(__dirname, '../sstbrt-frontend')}`);
     console.log(`🔒 CORS habilitado`);
   });
-});
 
 module.exports = app;
