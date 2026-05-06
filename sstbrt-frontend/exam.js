@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://sstbrt-backend.onrender.com/api";
+const API_BASE = '/api';
 
 let currentExam = null;
 let currentQuestions = [];
@@ -25,10 +25,11 @@ function protectRoute() {
 function loadUserAvatar() {
   try {
     const user = JSON.parse(localStorage.getItem('user'));
-    document.getElementById('userAvatar').textContent =
-      (user?.name || 'U')[0].toUpperCase();
+    const avatar = document.getElementById('userAvatar');
+    if (avatar) avatar.textContent = (user?.name || 'U')[0].toUpperCase();
   } catch {
-    document.getElementById('userAvatar').textContent = 'U';
+    const avatar = document.getElementById('userAvatar');
+    if (avatar) avatar.textContent = 'U';
   }
 }
 
@@ -46,9 +47,16 @@ async function loadExam() {
       return;
     }
 
-    const response = await fetch(`${API_BASE_URL}/exams/course/${courseId}`, {
-      headers: { Authorization: `Bearer ${token}` }
+    const response = await fetch(`${API_BASE}/exams/course/${courseId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
+
+    if (response.status === 401 || response.status === 403) {
+      forceLogout();
+      return;
+    }
 
     const data = await response.json();
 
@@ -57,18 +65,22 @@ async function loadExam() {
     }
 
     currentExam = data.exam;
-    currentQuestions = data.questions;
+    currentQuestions = data.questions || [];
 
     renderExam();
 
   } catch (error) {
     console.error(error);
-    document.getElementById('examContainer').innerHTML = `
-      <div class="empty-state">
-        <h2>No se pudo cargar el examen</h2>
-        <p>${error.message}</p>
-      </div>
-    `;
+
+    const container = document.getElementById('examContainer');
+    if (container) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <h2>No se pudo cargar el examen</h2>
+          <p>${error.message}</p>
+        </div>
+      `;
+    }
   }
 }
 
@@ -76,9 +88,20 @@ async function loadExam() {
 // RENDER EXAM
 // ============================================
 function renderExam() {
-  document.getElementById('examTitle').textContent = currentExam.title;
-
+  const title = document.getElementById('examTitle');
   const container = document.getElementById('examQuestions');
+
+  if (title) title.textContent = currentExam?.title || 'Examen';
+  if (!container) return;
+
+  if (!currentQuestions || currentQuestions.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <h2>Este examen no tiene preguntas</h2>
+      </div>
+    `;
+    return;
+  }
 
   container.innerHTML = currentQuestions.map((q, index) => `
     <div class="question-card">
@@ -101,15 +124,17 @@ async function submitExam() {
 
   for (const q of currentQuestions) {
     const selected = document.querySelector(`input[name="q${q.id}"]:checked`);
+
     if (!selected) {
       alert('Debes responder todas las preguntas');
       return;
     }
+
     answers[q.id] = selected.value;
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/exams/${currentExam.id}/submit`, {
+    const response = await fetch(`${API_BASE}/exams/${currentExam.id}/submit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -117,6 +142,11 @@ async function submitExam() {
       },
       body: JSON.stringify({ answers })
     });
+
+    if (response.status === 401 || response.status === 403) {
+      forceLogout();
+      return;
+    }
 
     const data = await response.json();
 
@@ -141,6 +171,8 @@ function openResultModal(score, passed, certificateCode) {
   const text = document.getElementById('resultText');
   const actions = document.querySelector('.modal-actions');
 
+  if (!modal || !title || !text || !actions) return;
+
   title.textContent = passed ? '¡Examen aprobado! 🎉' : 'Examen no aprobado';
   text.textContent = `Tu puntuación fue ${score}%.`;
 
@@ -164,13 +196,14 @@ function openResultModal(score, passed, certificateCode) {
   modal.classList.add('active');
 }
 
-// ✅ CORREGIDO AQUÍ
 function downloadCertificate(code) {
-  window.open(`/api/certificates/${code}`, '_blank');
+  window.open(`${API_BASE}/certificates/${code}`, '_blank');
 }
 
 function closeResultModal() {
-  document.getElementById('resultModal').classList.remove('active');
+  const modal = document.getElementById('resultModal');
+  if (modal) modal.classList.remove('active');
+
   window.location.href = '/courses';
 }
 
@@ -179,6 +212,7 @@ function closeResultModal() {
 // ============================================
 function clearSession() {
   localStorage.clear();
+  sessionStorage.clear();
 }
 
 function forceLogout() {
