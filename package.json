@@ -1,4 +1,10 @@
 {
+  "name": "sstbrt",
+  "version": "1.0.0",
+  "main": "sstbrt-backend/index.js",
+  "scripts": {
+    "start": "node sstbrt-backend/index.js"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
